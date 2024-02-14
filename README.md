@@ -35,3 +35,10 @@
 
 2. 두 클라이언트가 다른 채팅방(room)에 있는 경우
 ![다른 채팅 방](imgs/chat_different_room.png)
+
+## 4. 참고 자료
+- https://python-socketio.readthedocs.io/en/stable/index.html
+- https://www.youtube.com/watch?v=_dlfzWzYeEM
+- https://ctoahn.tistory.com/6
+- https://dev-in-seoul.tistory.com/45
+- https://medium.com/@parth116.rejoice/socket-io-with-python-fast-apis-1a1956b3989a

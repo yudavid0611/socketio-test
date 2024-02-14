@@ -21,5 +21,6 @@ async def main():
     
 
 if __name__ == '__main__':
+    # 단순 연결 테스트용 모듈
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())
