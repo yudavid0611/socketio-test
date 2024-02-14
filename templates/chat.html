@@ -1,0 +1,139 @@
+<!-- Home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<title>Chat</title>
+<style>
+
+body {
+  width: 100vw;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-layout {
+  display: flex;
+  justify-content: space-between;
+  width: 40%;
+  margin-bottom: 20px;
+}
+
+form {
+  display: flex;
+  align-items: center;
+}
+
+#message-layout {
+  width: 40%;
+  height: 500px;
+  border: 1px solid;
+  overflow: scroll;
+}
+
+</style>
+</head>
+<body>
+  <h1>WebSocket Chat Test</h1>
+
+  <div class="form-layout">
+    <p>입장할 채팅방</p>
+    <form action="" onsubmit="enterRoom(event)" >
+      <input type="text" id="roomName" autocomplete="off"/>
+      <button>Enter</button>
+    </form>
+  </div>
+
+  <div id="message-layout">
+    <ul id='messages'>
+    </ul>
+  </div>
+
+  <div class="form-layout">
+    <p>채팅 입력</p>
+    <form action="" onsubmit="sendMessage(event)">
+      <input type="text" id="messageText" autocomplete="off"/>
+      <button>Send</button>
+    </form>
+  </div>
+  
+
+  
+
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js" integrity="sha384-Gr6Lu2Ajx28mzwyVR8CFkULdCU7kMlZ9UthllibdOSo6qAiN+yXNHqtgdTvFXMT4" crossorigin="anonymous"></script>
+<script>
+  // user 이름 가져오기e
+  const user = '{{ user }}'
+  
+  // 채팅방
+  let room = ''
+
+  // 소켓 연결
+  const socket = io("http://localhost:8000", {
+      path: '/sockets'
+  })
+
+  // 메시지 수신
+  socket.on('getNewMessage', (data) => {
+      updateChat(data.sender, data.message)
+  })
+  
+  // 메시지 송신
+  function sendMessage(event) {
+    // 채팅방에 입장하지 않은 경우 경고
+    if (!room) {
+      alert('채팅방에 먼저 입장하세요.')
+      event.preventDefault()
+      return 
+    }
+
+    let input = document.getElementById('messageText')
+    
+    const data = {
+      sender: user,
+      message: input.value
+    }
+
+    socket.emit('sendMessage', data)
+    input.value = ''
+    event.preventDefault()
+  }
+
+  // 채팅방 입장
+  function enterRoom(event) {
+    let input = document.getElementById('roomName')
+
+    room = input.value
+    
+    const data = {
+      room: input.value,
+      user: user,
+    }
+
+    socket.emit('enterRoom', data)
+    event.preventDefault()
+
+    // 기존 채팅 내용 없애기
+    const ul = document.getElementById('messages');
+    while (ul.firstChild) {
+      ul.removeChild(ul.firstChild);
+    }
+  }
+  
+  // 화면에 채팅 내용 업데이트
+  function updateChat(sender, message) {
+    const messageTags = document.getElementById('messages')
+    const messageTag = document.createElement('li')
+    const content = document.createTextNode(`${sender} | ${message}`)
+    
+    messageTag.appendChild(content)
+    messageTags.appendChild(messageTag)
+  }
+</script>
+</body>
+</html>
